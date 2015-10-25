@@ -8,7 +8,7 @@ import gensim
 import os
 
 query_pool = QueryPool(Pool())
-webserver_query_pool = QueryPool(Pool(host_type_local=False))
+#webserver_query_pool = QueryPool(Pool(host_type_local=False))
 
 def train_word2vec(delete=False):
     # load articles from db
@@ -35,7 +35,7 @@ def train_word2vec(delete=False):
 
 def task_clustering(word2vec=None):
     # load db from remote
-    _ids, tasks = webserver_query_pool.get_tasks()
+    _ids, tasks = query_pool.get_article_logs()
 
     # word2vec load
     if word2vec is None:

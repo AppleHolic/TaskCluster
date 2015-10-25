@@ -22,6 +22,9 @@ class Pool():
         for k, v in configs.iteritems():
             setattr(self, k, v)
 
+        if self.host2 is None:
+            self.host2 = 'localhost'
+
     def __mk_pool(self):
         if self.host_type_local:
             return pymongo.MongoClient(
@@ -51,9 +54,15 @@ class QueryPool():
 
     def get_tasks(self):
         task_collection = self.conn.get_collection('tasks')
-        tasks = [(item['_id'], item['task_title']) for item in list(task_collection.find())]
+        tasks = [(item['_id'], item['name'], item['description']) for item in list(task_collection.find())]
         #print tasks
         return map(list, zip(*tasks))
+
+    def get_article_logs(self):
+        log_collection = self.conn.get_collection('article_read_log')
+        #select all
+        logs = [(item['_id'], item['task_title']) for item in list(log_collection.find())]
+        return map(list, zip(*logs))
 
     def attach_task_label(self, _ids, labels):
         log_collection = self.conn.get_collection('article_read_log')
