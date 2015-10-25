@@ -22,9 +22,6 @@ class Pool():
         for k, v in configs.iteritems():
             setattr(self, k, v)
 
-        if self.host2 is None:
-            self.host2 = 'localhost'
-
     def __mk_pool(self):
         if self.host_type_local:
             return pymongo.MongoClient(
