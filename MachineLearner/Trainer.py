@@ -3,7 +3,7 @@ import gensim
 import numpy as np
 import os
 from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans, DBScan
+from sklearn.cluster import KMeans, DBSCAN
 from sklearn.pipeline import Pipeline
 from sklearn.externals import joblib
 from Vectorizer import tasks_to_vectors
@@ -34,14 +34,18 @@ def decompose_and_cluster(tasks, word2vec, output_file, method='DBSCAN', option=
     d_vector = pca.fit_transform(whole_vector)
 #    print 'PCA Log Likelihood Score : ' + str(pca.score())
 
-    
-    print 'Training K-means...'
-    kmeans = KMeans(n_clusters=n_clusters, n_jobs=3)
-    kmeans.fit(d_vector)
-    labels = kmeans.predict(d_vector)
+    if method=='KMeans':
+        print 'Training K-means...'
+        cluster = KMeans(n_clusters=option, n_jobs=3)
+    else:
+        print 'Training DBSCAN ... '
+        cluster = DBSCAN(eps=option)
+
+    cluster.fit(d_vector)
+    labels = cluster.predict(d_vector)
 
     pipe = Pipeline(steps=[
-        ('w2v_200_to_5_PCA', pca), ('Kmeans_1000', kmeans)
+        ('w2v_200_to_5_PCA', pca), ('clustering', cluster)
     ])
     if os.path.exists(output_file):
         os.remove(output_file)
