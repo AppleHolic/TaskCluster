@@ -3,7 +3,7 @@ import gensim
 import numpy as np
 import os
 from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, DBScan
 from sklearn.pipeline import Pipeline
 from sklearn.externals import joblib
 from Vectorizer import tasks_to_vectors
@@ -21,13 +21,20 @@ def train_and_save_vector(input_file, output_file):
 
     return model
 
-def decompose_and_cluster(tasks, word2vec, output_file, n_clusters):
+def decompose_and_cluster(tasks, word2vec, output_file, method='DBSCAN', option=0.5):
+    """
+        You should pass parameter 'method', 'option' as follows
+        method = 'DBSCAN' or 'KMeans'
+        option = eps or n_clusters
+    """
     print 'Get task vector'
     whole_vector = tasks_to_vectors(tasks, word2vec)
     print 'Down dimension...'
     pca = PCA(5)
     d_vector = pca.fit_transform(whole_vector)
+#    print 'PCA Log Likelihood Score : ' + str(pca.score())
 
+    
     print 'Training K-means...'
     kmeans = KMeans(n_clusters=n_clusters, n_jobs=3)
     kmeans.fit(d_vector)
